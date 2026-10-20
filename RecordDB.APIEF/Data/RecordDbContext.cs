@@ -8,6 +8,8 @@ namespace RecordDB.APIEF.Data
     {
         public DbSet<Artist> Artists => Set<Artist>();
         public DbSet<Record> Records => Set<Record>();
+        public DbSet<Disc>   Discs   => Set<Disc>();
+        public DbSet<Track>  Tracks  => Set<Track>();
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

@@ -1,5 +1,9 @@
 @RecordDB.APIEF_HostAddress = https://localhost:7097
 
+# =======================================================================
+# Artist Endpoints
+# =======================================================================
+
 ### Get all artists
 GET {{RecordDB.APIEF_HostAddress}}/api/artist
 Accept: application/json
@@ -17,7 +21,7 @@ GET {{RecordDB.APIEF_HostAddress}}/api/artist/no-biography
 Accept: application/json
 
 ### Get artist with no biography by name
-GET {{RecordDB.APIEF_HostAddress}}/api/artist/no-biography/Miles
+GET {{RecordDB.APIEF_HostAddress}}/api/artist/no-biography/Robyn%20Archer
 Accept: application/json
 
 ### Get artist by Record ID
@@ -56,3 +60,111 @@ Content-Type: application/json
 
 ### Delete artist
 DELETE {{RecordDB.APIEF_HostAddress}}/api/artist/999
+
+# =======================================================================
+# Record Endpoints
+# =======================================================================
+
+### Get all records with artist details
+GET {{RecordDB.APIEF_HostAddress}}/api/record
+Accept: application/json
+
+### Get single record with artist details by ID
+GET {{RecordDB.APIEF_HostAddress}}/api/record/1
+Accept: application/json
+
+### Get records filtered by show flag (e.g. cd, records, dvds, blurays, all, or year)
+GET {{RecordDB.APIEF_HostAddress}}/api/record/show/cd
+Accept: application/json
+
+### Get records by artist name
+GET {{RecordDB.APIEF_HostAddress}}/api/record/by-artist/Miles%20Davis
+Accept: application/json
+
+### Get records by recording year
+GET {{RecordDB.APIEF_HostAddress}}/api/record/by-year/1970
+Accept: application/json
+
+### Get all records that have reviews
+GET {{RecordDB.APIEF_HostAddress}}/api/record/reviews
+Accept: application/json
+
+### Get all records missing reviews
+GET {{RecordDB.APIEF_HostAddress}}/api/record/no-reviews
+Accept: application/json
+
+### Get records that have no tracks
+GET {{RecordDB.APIEF_HostAddress}}/api/record/no-tracks
+Accept: application/json
+
+### Get records with no tracks for a specific artist
+GET {{RecordDB.APIEF_HostAddress}}/api/record/no-tracks/Miles%20Davis
+Accept: application/json
+
+### Search tracks by partial name
+GET {{RecordDB.APIEF_HostAddress}}/api/record/tracks/search/Love
+Accept: application/json
+
+### Get records for an artist ID as flat Record objects
+GET {{RecordDB.APIEF_HostAddress}}/api/record/by-artist-id/1
+Accept: application/json
+
+### Get per-artist total disc count and cost
+GET {{RecordDB.APIEF_HostAddress}}/api/record/totals
+Accept: application/json
+
+### Count total discs by show flag
+GET {{RecordDB.APIEF_HostAddress}}/api/record/disc-count/all
+Accept: application/json
+
+### Count total records for an artist
+GET {{RecordDB.APIEF_HostAddress}}/api/record/count/artist/1
+Accept: application/json
+
+### Count total records for a recording year
+GET {{RecordDB.APIEF_HostAddress}}/api/record/count/year/1970
+Accept: application/json
+
+### Create record
+POST {{RecordDB.APIEF_HostAddress}}/api/record
+Content-Type: application/json
+
+{
+  "artistId": 1,
+  "name": "Kind of Blue (Special Edition)",
+  "field": "Jazz",
+  "recorded": 1959,
+  "label": "Columbia",
+  "pressing": "US",
+  "rating": "****",
+  "discs": 1,
+  "media": "CD",
+  "bought": "2024-01-15T00:00:00",
+  "cost": 19.99,
+  "coverName": "kind_of_blue.jpg",
+  "review": "Masterpiece of modal jazz."
+}
+
+### Update record
+PUT {{RecordDB.APIEF_HostAddress}}/api/record/1
+Content-Type: application/json
+
+{
+  "recordId": 1,
+  "artistId": 1,
+  "name": "It Takes A Year",
+  "field": "Acoustic",
+  "recorded": 1977,
+  "label": "Windham Hill",
+  "pressing": "US",
+  "rating": "****",
+  "discs": 1,
+  "media": "CD",
+  "bought": "1990-07-15T00:00:00",
+  "cost": 15.00,
+  "coverName": "it_takes_a_year.jpg",
+  "review": "Solo acoustic guitar."
+}
+
+### Delete record
+DELETE {{RecordDB.APIEF_HostAddress}}/api/record/99999

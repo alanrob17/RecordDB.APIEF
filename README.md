@@ -15,14 +15,12 @@ This project ports the data access layer from stored procedures and Dapper to id
 
 ---
 
-## Current Status: Phase 1 — Artist Layer
+## Current Status
 
-The **Artist Layer** is fully implemented and operational:
-* `RecordDbContext` with Fluent API table mapping (`[dbo].[Artist]`).
-* Idiomatic EF Core LINQ queries replacing all Dapper stored procedures.
-* Complete Artist REST API endpoints matching the original specification.
-* Triple API Documentation (Scalar, ReDoc, Swagger UI).
-* Side-by-side execution support on ports `https://localhost:7097` and `http://localhost:5184`.
+- [x] **Artist Layer** (`/api/artist`) — 11 endpoints
+- [x] **Record Layer** (`/api/record`) — 17 endpoints
+- [ ] **Disc Layer** (`/api/disc`)
+- [ ] **Track Layer** (`/api/track`)
 
 ---
 
@@ -34,30 +32,41 @@ RecordDB.APIEF/
 └── RecordDB.APIEF/
     ├── Program.cs                        # DI setup, EF Core DbContext, & Swagger/Scalar
     ├── appsettings.json                  # Database connection string & logging config
+    ├── RecordDB.APIEF.http               # Integration tests for all endpoints
     ├── Controllers/
-    │   └── ArtistController.cs           # Artist CRUD, bios, and search endpoints
+    │   ├── ArtistController.cs           # Artist CRUD, bios, and search endpoints
+    │   └── RecordController.cs           # Record CRUD, reviews, totals, and counts
     ├── Repositories/
-    │   ├── IArtistRepository.cs          # Data access abstraction
-    │   └── ArtistRepository.cs           # EF Core LINQ repository implementation
+    │   ├── IArtistRepository.cs / ArtistRepository.cs
+    │   └── IRecordRepository.cs / RecordRepository.cs
     ├── Data/
     │   ├── RecordDbContext.cs            # EF Core DbContext
     │   └── Configurations/
     │       ├── ArtistConfiguration.cs    # Fluent API mappings for Artist
-    │       └── RecordConfiguration.cs    # Minimal navigation stub for Record
+    │       ├── RecordConfiguration.cs    # Fluent API mappings for Record
+    │       ├── DiscConfiguration.cs      # Fluent API mappings for Disc
+    │       └── TrackConfiguration.cs     # Fluent API mappings for Track
     ├── Models/
-    │   ├── Artist.cs                     # Artist entity with navigation to Records
-    │   └── Record.cs                     # Minimal Record stub for foreign key queries
-    └── DTOs/
-        ├── ArtistDto.cs                  # Response DTO
-        ├── CreateArtistDto.cs            # Request DTO for creating artists
-        └── UpdateArtistDto.cs            # Request DTO for updating artists
+    │   ├── Artist.cs
+    │   ├── Record.cs
+    │   ├── Disc.cs
+    │   ├── Track.cs
+    │   └── Total.cs
+    ├── DTOs/
+    │   ├── ArtistDto.cs / CreateArtistDto.cs / UpdateArtistDto.cs
+    │   ├── CreateRecordDto.cs / UpdateRecordDto.cs
+    │   ├── ArtistRecordDto.cs
+    │   ├── ArtistRecordDiscDto.cs
+    │   ├── ArtistRecordDiscTrackDto.cs
+    │   ├── RecordReviewDto.cs
+    │   └── MissingReviewDto.cs
+    └── Extensions/
+        └── DateTimeExtensions.cs
 ```
 
 ---
 
 ## Running the API
-
-From the terminal:
 
 ```powershell
 # Build solution
@@ -75,18 +84,25 @@ Once running:
 
 ---
 
-## Artist Endpoints (`/api/artist`)
+## Record Endpoints (`/api/record`)
 
 | HTTP Method | Route | Description |
 |---|---|---|
-| `GET` | `/api/artist` | Retrieve all artists |
-| `GET` | `/api/artist/{id}` | Retrieve a single artist by ID |
-| `GET` | `/api/artist/search/{name}` | Search artists by partial name |
-| `GET` | `/api/artist/no-biography` | Retrieve all artists with missing biography |
-| `GET` | `/api/artist/no-biography/{name}` | Retrieve an artist with no biography by name |
-| `GET` | `/api/artist/by-record/{recordId}` | Retrieve the artist for a specific record |
-| `GET` | `/api/artist/biography/{recordId}` | Retrieve the biography text for a record's artist |
-| `GET` | `/api/artist/artist-id?firstName=&lastName=` | Look up an `ArtistId` by first and last name |
-| `POST` | `/api/artist` | Create a new artist (`CreateArtistDto`) |
-| `PUT` | `/api/artist/{id}` | Update an existing artist (`UpdateArtistDto`) |
-| `DELETE` | `/api/artist/{id}` | Delete an artist by ID |
+| `GET` | `/api/record` | Retrieve all records with artist details |
+| `GET` | `/api/record/{id}` | Retrieve a single record with artist details by ID |
+| `GET` | `/api/record/show/{show}` | Filter records by show flag (`cd`, `records`, `dvds`, `blurays`, `all`, or year) |
+| `GET` | `/api/record/by-artist/{name}` | Retrieve records by artist name |
+| `GET` | `/api/record/by-artist-id/{artistId}` | Retrieve records for an artist ID |
+| `GET` | `/api/record/by-year/{year}` | Retrieve records by recording year |
+| `GET` | `/api/record/reviews` | Retrieve all records having reviews |
+| `GET` | `/api/record/no-reviews` | Retrieve all records missing reviews |
+| `GET` | `/api/record/no-tracks` | Retrieve all records that have no tracks |
+| `GET` | `/api/record/no-tracks/{name}` | Retrieve records with no tracks for a specific artist |
+| `GET` | `/api/record/tracks/search/{name}` | Search tracks with record/disc context |
+| `GET` | `/api/record/totals` | Retrieve per-artist disc count and cost totals |
+| `GET` | `/api/record/disc-count/{show}` | Count total discs by show flag |
+| `GET` | `/api/record/count/artist/{artistId}` | Count total records for an artist |
+| `GET` | `/api/record/count/year/{year}` | Count total records for a recording year |
+| `POST` | `/api/record` | Create a new record (`CreateRecordDto`) |
+| `PUT` | `/api/record/{id}` | Update an existing record (`UpdateRecordDto`) |
+| `DELETE` | `/api/record/{id}` | Delete a record by ID |
