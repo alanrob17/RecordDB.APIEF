@@ -1,0 +1,58 @@
+@RecordDB.APIEF_HostAddress = https://localhost:7097
+
+### Get all artists
+GET {{RecordDB.APIEF_HostAddress}}/api/artist
+Accept: application/json
+
+### Get artist by ID
+GET {{RecordDB.APIEF_HostAddress}}/api/artist/1
+Accept: application/json
+
+### Search artists by partial name
+GET {{RecordDB.APIEF_HostAddress}}/api/artist/search/Miles
+Accept: application/json
+
+### Get artists with no biography
+GET {{RecordDB.APIEF_HostAddress}}/api/artist/no-biography
+Accept: application/json
+
+### Get artist with no biography by name
+GET {{RecordDB.APIEF_HostAddress}}/api/artist/no-biography/Miles
+Accept: application/json
+
+### Get artist by Record ID
+GET {{RecordDB.APIEF_HostAddress}}/api/artist/by-record/1
+Accept: application/json
+
+### Get biography by Record ID
+GET {{RecordDB.APIEF_HostAddress}}/api/artist/biography/1
+Accept: application/json
+
+### Get artist ID by first and last name
+GET {{RecordDB.APIEF_HostAddress}}/api/artist/artist-id?firstName=Miles&lastName=Davis
+Accept: application/json
+
+### Create artist
+POST {{RecordDB.APIEF_HostAddress}}/api/artist
+Content-Type: application/json
+
+{
+  "firstName": "John",
+  "lastName": "Coltrane",
+  "biography": "American jazz saxophonist and composer."
+}
+
+### Update artist
+PUT {{RecordDB.APIEF_HostAddress}}/api/artist/1
+Content-Type: application/json
+
+{
+  "artistId": 1,
+  "firstName": "Miles",
+  "lastName": "Davis",
+  "name": "Miles Davis",
+  "biography": "Influential American trumpeter, bandleader, and composer."
+}
+
+### Delete artist
+DELETE {{RecordDB.APIEF_HostAddress}}/api/artist/999
