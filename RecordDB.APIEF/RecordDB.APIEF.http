@@ -168,3 +168,135 @@ Content-Type: application/json
 
 ### Delete record
 DELETE {{RecordDB.APIEF_HostAddress}}/api/record/99999
+
+# =======================================================================
+# Disc Endpoints
+# =======================================================================
+
+### Get all discs
+GET {{RecordDB.APIEF_HostAddress}}/api/disc
+Accept: application/json
+
+### Get single disc by ID
+GET {{RecordDB.APIEF_HostAddress}}/api/disc/1
+Accept: application/json
+
+### Search discs by record name
+GET {{RecordDB.APIEF_HostAddress}}/api/disc/search/Kind
+Accept: application/json
+
+### Create disc
+POST {{RecordDB.APIEF_HostAddress}}/api/disc
+Content-Type: application/json
+
+{
+  "recordId": 1,
+  "discNo": 2,
+  "freeDbDiscId": null,
+  "freeDbId": null,
+  "length": 3200
+}
+
+### Update disc
+PUT {{RecordDB.APIEF_HostAddress}}/api/disc/1
+Content-Type: application/json
+
+{
+  "discId": 1,
+  "discNo": 1,
+  "freeDbDiscId": null,
+  "freeDbId": null,
+  "length": 2400
+}
+
+### Update disc length only (PATCH)
+PATCH {{RecordDB.APIEF_HostAddress}}/api/disc/1/length
+Content-Type: application/json
+
+{
+  "length": 2450
+}
+
+### Delete disc
+DELETE {{RecordDB.APIEF_HostAddress}}/api/disc/99999
+
+# =======================================================================
+# Track Endpoints
+# =======================================================================
+
+### Get all tracks
+GET {{RecordDB.APIEF_HostAddress}}/api/track
+Accept: application/json
+
+### Get single track by ID
+GET {{RecordDB.APIEF_HostAddress}}/api/track/1
+Accept: application/json
+
+### Search tracks by partial name
+GET {{RecordDB.APIEF_HostAddress}}/api/track/search/So%20What
+Accept: application/json
+
+### Get tracks by artist name
+GET {{RecordDB.APIEF_HostAddress}}/api/track/by-artist/Miles%20Davis
+Accept: application/json
+
+### Get tracks by record name
+GET {{RecordDB.APIEF_HostAddress}}/api/track/by-record/Kind%20of%20Blue
+Accept: application/json
+
+### Get total track count for a record ID
+GET {{RecordDB.APIEF_HostAddress}}/api/track/count/record/1
+Accept: application/json
+
+### Check track count for a disc ID
+GET {{RecordDB.APIEF_HostAddress}}/api/track/check/disc/1
+Accept: application/json
+
+### Create track
+POST {{RecordDB.APIEF_HostAddress}}/api/track
+Content-Type: application/json
+
+{
+  "discId": 1,
+  "trackNo": 10,
+  "name": "Bonus Track",
+  "trackLength": 180,
+  "extended": "Recorded live in 1978"
+}
+
+### Bulk create tracks
+POST {{RecordDB.APIEF_HostAddress}}/api/track/bulk
+Content-Type: application/json
+
+[
+  {
+    "discId": 1,
+    "trackNo": 11,
+    "name": "Live Intro",
+    "trackLength": 60,
+    "extended": null
+  },
+  {
+    "discId": 1,
+    "trackNo": 12,
+    "name": "Live Outro",
+    "trackLength": 90,
+    "extended": null
+  }
+]
+
+### Update track
+PUT {{RecordDB.APIEF_HostAddress}}/api/track/1
+Content-Type: application/json
+
+{
+  "trackId": 1,
+  "discId": 1,
+  "trackNo": 1,
+  "name": "The Bricklayer's Beautiful Daughter",
+  "trackLength": 218,
+  "extended": null
+}
+
+### Delete track
+DELETE {{RecordDB.APIEF_HostAddress}}/api/track/99999

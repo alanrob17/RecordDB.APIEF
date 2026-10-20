@@ -18,6 +18,8 @@ builder.Services.AddDbContext<RecordDbContext>(options =>
 // Repositories (scoped — one per HTTP request)
 builder.Services.AddScoped<IArtistRepository, ArtistRepository>();
 builder.Services.AddScoped<IRecordRepository, RecordRepository>();
+builder.Services.AddScoped<IDiscRepository, DiscRepository>();
+builder.Services.AddScoped<ITrackRepository, TrackRepository>();
 
 // Swagger / OpenAPI
 builder.Services.AddEndpointsApiExplorer();

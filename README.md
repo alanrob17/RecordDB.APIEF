@@ -9,18 +9,18 @@
 ![ReDoc](https://img.shields.io/badge/ReDoc-API%20Docs-263238?logo=openapiinitiative&logoColor=white&style=for-the-badge)
 ![Swagger](https://img.shields.io/badge/Swagger%20%2F%20OpenAPI-85EA2D?logo=swagger&logoColor=black&style=for-the-badge)
 
-A modern, high-performance **.NET 10 Web API** for the **RecordDB** music catalog system built with **Entity Framework Core 10**.
+A standalone, modern, high-performance **.NET 10 Web API** for the **RecordDB** music catalog system built entirely with **Entity Framework Core 10**.
 
-This project ports the data access layer from stored procedures and Dapper to idiomatic EF Core LINQ queries, change tracking, and Fluent API configurations while maintaining 100% endpoint, route, DTO, and contract parity.
+This project ports the whole data access layer from Dapper and stored procedures to idiomatic EF Core LINQ queries, change tracking, navigation properties, and Fluent API configurations while maintaining 100% endpoint, route, DTO, and contract parity with the original API.
 
 ---
 
-## Current Status
+## Migration Status: 100% Complete
 
 - [x] **Artist Layer** (`/api/artist`) — 11 endpoints
 - [x] **Record Layer** (`/api/record`) — 17 endpoints
-- [ ] **Disc Layer** (`/api/disc`)
-- [ ] **Track Layer** (`/api/track`)
+- [x] **Disc Layer** (`/api/disc`) — 7 endpoints
+- [x] **Track Layer** (`/api/track`) — 11 endpoints
 
 ---
 
@@ -32,13 +32,17 @@ RecordDB.APIEF/
 └── RecordDB.APIEF/
     ├── Program.cs                        # DI setup, EF Core DbContext, & Swagger/Scalar
     ├── appsettings.json                  # Database connection string & logging config
-    ├── RecordDB.APIEF.http               # Integration tests for all endpoints
+    ├── RecordDB.APIEF.http               # Complete integration test suite
     ├── Controllers/
     │   ├── ArtistController.cs           # Artist CRUD, bios, and search endpoints
-    │   └── RecordController.cs           # Record CRUD, reviews, totals, and counts
+    │   ├── RecordController.cs           # Record CRUD, reviews, totals, and counts
+    │   ├── DiscController.cs             # Disc CRUD and length patching
+    │   └── TrackController.cs            # Track CRUD, search, and bulk operations
     ├── Repositories/
     │   ├── IArtistRepository.cs / ArtistRepository.cs
-    │   └── IRecordRepository.cs / RecordRepository.cs
+    │   ├── IRecordRepository.cs / RecordRepository.cs
+    │   ├── IDiscRepository.cs   / DiscRepository.cs
+    │   └── ITrackRepository.cs  / TrackRepository.cs
     ├── Data/
     │   ├── RecordDbContext.cs            # EF Core DbContext
     │   └── Configurations/
@@ -55,6 +59,8 @@ RecordDB.APIEF/
     ├── DTOs/
     │   ├── ArtistDto.cs / CreateArtistDto.cs / UpdateArtistDto.cs
     │   ├── CreateRecordDto.cs / UpdateRecordDto.cs
+    │   ├── CreateDiscDto.cs / UpdateDiscDto.cs / UpdateDiscLengthDto.cs
+    │   ├── CreateTrackDto.cs / UpdateTrackDto.cs
     │   ├── ArtistRecordDto.cs
     │   ├── ArtistRecordDiscDto.cs
     │   ├── ArtistRecordDiscTrackDto.cs
@@ -80,11 +86,29 @@ Once running:
 - **Scalar API Reference**: `https://localhost:7097/scalar/v1` (or root `https://localhost:7097/`)
 - **ReDoc**: `https://localhost:7097/redoc`
 - **Swagger UI**: `https://localhost:7097/swagger`
-- **OpenAPI JSON**: `https://localhost:7097/openapi/v1.json`
+- **OpenAPI Specification**: `https://localhost:7097/openapi/v1.json`
 
 ---
 
-## Record Endpoints (`/api/record`)
+## API Endpoints Reference
+
+### 1. Artist (`/api/artist`)
+
+| HTTP Method | Route | Description |
+|---|---|---|
+| `GET` | `/api/artist` | Retrieve all artists |
+| `GET` | `/api/artist/{id}` | Retrieve a single artist by ID |
+| `GET` | `/api/artist/search/{name}` | Search artists by partial name |
+| `GET` | `/api/artist/no-biography` | Retrieve all artists with missing biography |
+| `GET` | `/api/artist/no-biography/{name}` | Retrieve an artist with no biography by name |
+| `GET` | `/api/artist/by-record/{recordId}` | Retrieve the artist for a specific record |
+| `GET` | `/api/artist/biography/{recordId}` | Retrieve the biography text for a record's artist |
+| `GET` | `/api/artist/artist-id?firstName=&lastName=` | Look up an `ArtistId` by first and last name |
+| `POST` | `/api/artist` | Create a new artist (`CreateArtistDto`) |
+| `PUT` | `/api/artist/{id}` | Update an existing artist (`UpdateArtistDto`) |
+| `DELETE` | `/api/artist/{id}` | Delete an artist by ID |
+
+### 2. Record (`/api/record`)
 
 | HTTP Method | Route | Description |
 |---|---|---|
@@ -106,3 +130,31 @@ Once running:
 | `POST` | `/api/record` | Create a new record (`CreateRecordDto`) |
 | `PUT` | `/api/record/{id}` | Update an existing record (`UpdateRecordDto`) |
 | `DELETE` | `/api/record/{id}` | Delete a record by ID |
+
+### 3. Disc (`/api/disc`)
+
+| HTTP Method | Route | Description |
+|---|---|---|
+| `GET` | `/api/disc` | Retrieve all discs with artist and record context |
+| `GET` | `/api/disc/{id}` | Retrieve a single disc by ID |
+| `GET` | `/api/disc/search/{name}` | Search discs by record name |
+| `POST` | `/api/disc` | Create a new disc (`CreateDiscDto`) |
+| `PUT` | `/api/disc/{id}` | Update an existing disc (`UpdateDiscDto`) |
+| `PATCH` | `/api/disc/{id}/length` | Update only the disc's length (`UpdateDiscLengthDto`) |
+| `DELETE` | `/api/disc/{id}` | Delete a disc by ID |
+
+### 4. Track (`/api/track`)
+
+| HTTP Method | Route | Description |
+|---|---|---|
+| `GET` | `/api/track` | Retrieve all tracks with full context |
+| `GET` | `/api/track/{id}` | Retrieve a single track by ID |
+| `GET` | `/api/track/search/{name}` | Search tracks by partial name |
+| `GET` | `/api/track/by-artist/{name}` | Retrieve tracks for records by artist name |
+| `GET` | `/api/track/by-record/{name}` | Retrieve tracks by record name |
+| `GET` | `/api/track/count/record/{recordId}` | Get total track count for a record ID |
+| `GET` | `/api/track/check/disc/{discId}` | Check existing track count for a disc |
+| `POST` | `/api/track` | Create a single track (`CreateTrackDto`) |
+| `POST` | `/api/track/bulk` | Bulk-insert multiple tracks (`IEnumerable<CreateTrackDto>`) |
+| `PUT` | `/api/track/{id}` | Update an existing track (`UpdateTrackDto`) |
+| `DELETE` | `/api/track/{id}` | Delete a track by ID |
