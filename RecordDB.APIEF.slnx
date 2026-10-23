@@ -1,3 +1,4 @@
 <Solution>
+  <Project Path="RecordDB.APIEF.Tests/RecordDB.APIEF.Tests.csproj" />
   <Project Path="RecordDB.APIEF/RecordDB.APIEF.csproj" />
 </Solution>

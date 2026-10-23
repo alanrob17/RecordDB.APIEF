@@ -8,6 +8,7 @@
 ![Scalar](https://img.shields.io/badge/Scalar-API%20Reference-E9573F?style=for-the-badge)
 ![ReDoc](https://img.shields.io/badge/ReDoc-API%20Docs-263238?logo=openapiinitiative&logoColor=white&style=for-the-badge)
 ![Swagger](https://img.shields.io/badge/Swagger%20%2F%20OpenAPI-85EA2D?logo=swagger&logoColor=black&style=for-the-badge)
+![xUnit](https://img.shields.io/badge/xUnit-94%20Tests%20Passing-success?logo=dotnet&logoColor=white&style=for-the-badge)
 
 A standalone, high-performance **.NET 10 Web API** for the **RecordDB** music catalog system, powered by **Entity Framework Core 10** and **Microsoft SQL Server**.
 
@@ -104,8 +105,21 @@ RecordDB.APIEF/
     │   ├── ArtistRecordDiscTrackDto.cs    # Full projection joining Artist + Record + Disc + Track
     │   ├── RecordReviewDto.cs             # Slim projection for reviews
     │   └── MissingReviewDto.cs            # Slim projection for records missing reviews
-    └── Extensions/
-        └── DateTimeExtensions.cs          # Culture-invariant date formatting helpers
+    ├── Extensions/
+    │   └── DateTimeExtensions.cs          # Culture-invariant date formatting helpers
+    └── RecordDB.APIEF.Tests/              # Automated Test Suite (xUnit + WebApplicationFactory)
+        ├── UnitTests/Controllers/         # 63 Isolated Controller unit tests (Moq)
+        │   ├── ArtistControllerTests.cs
+        │   ├── RecordControllerTests.cs
+        │   ├── DiscControllerTests.cs
+        │   └── TrackControllerTests.cs
+        └── IntegrationTests/              # 31 End-to-end HTTP pipeline tests
+            ├── CustomWebApplicationFactory.cs
+            ├── DocumentationEndpointTests.cs
+            ├── ArtistEndpointTests.cs
+            ├── RecordEndpointTests.cs
+            ├── DiscEndpointTests.cs
+            └── TrackEndpointTests.cs
 ```
 
 ---
@@ -258,6 +272,48 @@ The project includes a ready-to-run HTTP test file:
 [`RecordDB.APIEF/RecordDB.APIEF.http`](file:///D:/Projects/RecordDB.APIEF/RecordDB.APIEF/RecordDB.APIEF.http)
 
 If you are using **Visual Studio** or **VS Code** (with the *REST Client* extension), you can open this file and click **"Send Request"** directly above any endpoint to test GET, POST, PUT, PATCH, and DELETE requests against the live API.
+
+---
+
+## Automated Testing Suite (xUnit)
+
+`RecordDB.APIEF` comes with a comprehensive, lightning-fast automated test suite (**94 automated tests**) implemented in `RecordDB.APIEF.Tests` using **xUnit**, **Moq**, **FluentAssertions**, and **Microsoft.AspNetCore.Mvc.Testing**.
+
+### Running the Tests
+
+To execute the entire test suite from the command line:
+
+```powershell
+dotnet test D:\Projects\RecordDB.APIEF\RecordDB.APIEF.slnx
+```
+
+Or run tests with detailed verbosity:
+
+```powershell
+dotnet test D:\Projects\RecordDB.APIEF\RecordDB.APIEF.slnx --logger "console;verbosity=detailed"
+```
+
+### Test Suite Structure
+
+The test suite is partitioned into two complementary layers:
+
+#### 1. Controller Unit Tests (`UnitTests/Controllers/` — 63 Tests)
+Tests each controller action in complete isolation using strongly typed mocks (`Moq`):
+* **ArtistControllerTests**: Validates 11 endpoints, verifying correct `ActionResult<T>` types, 200 OK payloads, 201 CreatedAtAction route values, 204 NoContent confirmations, 400 BadRequest input validation, and 404 NotFound behavior.
+* **RecordControllerTests**: Validates 17 endpoints, including search filters, show flag queries, review listings, cost totals, and error handling.
+* **DiscControllerTests**: Validates 7 endpoints, including search by partial record name, auto-incrementing disc numbers, and PATCH length updates.
+* **TrackControllerTests**: Validates 11 endpoints, including single track creation, multi-row bulk track ingestion, track reordering, and queries by artist/record name.
+
+#### 2. Full HTTP Pipeline Integration Tests (`IntegrationTests/` — 31 Tests)
+Leverages `Microsoft.AspNetCore.Mvc.Testing.WebApplicationFactory<Program>` to spin up an in-memory test server executing the actual ASP.NET Core HTTP request pipeline:
+* **DocumentationEndpointTests**: Verifies that `/openapi/v1.json`, `/swagger`, `/scalar/v1`, and `/redoc` serve valid specs and HTML, and that root `/` cleanly redirects to `/scalar/v1`.
+* **ArtistEndpointTests**: Executes HTTP GET, POST, PUT, and DELETE requests through `HttpClient`, validating routing, model binding, JSON serialization/deserialization, and `Location` response headers.
+* **RecordEndpointTests**: Exercises record collection, review queries, and DTO round-tripping.
+* **DiscEndpointTests**: Exercises disc retrieval, creation, and `PATCH /api/disc/{id}/length` payloads.
+* **TrackEndpointTests**: Exercises single track creation and `POST /api/track/bulk` batch ingestion payloads.
+
+#### 3. Testcontainers & Containerized SQL Server Testing
+For environments where Docker Desktop is active, integration tests can optionally be backed by **Testcontainers for .NET** (`Testcontainers.MsSql`) to spin up disposable, containerized SQL Server instances on the fly without requiring a pre-installed database instance.
 
 ---
 
