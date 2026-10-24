@@ -158,7 +158,7 @@ namespace RecordDB.APIEF.Repositories
         {
             return await _context.Records
                 .AsNoTracking()
-                .Include(r => r.Artist)
+
                 .Where(r => r.ArtistId == artistId)
                 .OrderByDescending(r => r.Recorded)
                 .ToListAsync();
@@ -194,14 +194,15 @@ namespace RecordDB.APIEF.Repositories
         {
             return await _context.Records
                 .AsNoTracking()
+                .Where(r => EF.Functions.Like(r.Review!, "%"))
                 .OrderBy(r => r.Artist!.LastName)
                 .ThenBy(r => r.Artist!.FirstName)
                 .ThenBy(r => r.Recorded)
                 .Select(r => new RecordReviewDto
                 {
-                    Name   = r.Artist!.Name,
-                    Title  = r.Name,
-                    Review = r.Review ?? string.Empty
+                    Name = r.Artist!.Name,
+                    Title = r.Name,
+                    Review = r.Review!
                 })
                 .ToListAsync();
         }

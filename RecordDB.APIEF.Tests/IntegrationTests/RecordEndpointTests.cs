@@ -74,6 +74,27 @@ namespace RecordDB.APIEF.Tests.IntegrationTests
         }
 
         [Fact]
+        public async Task GetByArtistId_ReturnsOkWithFlatRecordList()
+        {
+            // Arrange
+            var records = new List<RecordModel>
+            {
+                new() { RecordId = 1, ArtistId = 42, Name = "Kind of Blue", Recorded = 1959 }
+            };
+            _factory.RecordRepoMock.Setup(r => r.GetArtistRecordsAsync(42)).ReturnsAsync(records);
+
+            // Act
+            var response = await _client.GetAsync("/api/record/by-artist-id/42");
+
+            // Assert
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
+            var result = await response.Content.ReadFromJsonAsync<List<RecordModel>>();
+            result.Should().NotBeNull();
+            result!.Should().ContainSingle();
+            result[0].Name.Should().Be("Kind of Blue");
+        }
+
+        [Fact]
         public async Task GetReviews_ReturnsOkWithReviewList()
         {
             // Arrange

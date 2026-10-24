@@ -1,3 +1,5 @@
+using System.Text.Json.Serialization;
+
 namespace RecordDB.APIEF.Models
 {
     /// <summary>
@@ -13,6 +15,7 @@ namespace RecordDB.APIEF.Models
         public string? Extended    { get; set; }
 
         // Navigation property
+        [JsonIgnore]
         public Disc? Disc { get; set; }
 
         public override string ToString() =>

@@ -1,3 +1,5 @@
+using System.Text.Json.Serialization;
+
 namespace RecordDB.APIEF.Models
 {
     /// <summary>
@@ -14,6 +16,7 @@ namespace RecordDB.APIEF.Models
         /// <summary>
         /// Navigation property to Records by this artist.
         /// </summary>
+        [JsonIgnore]
         public ICollection<Record> Records { get; set; } = new List<Record>();
 
         public override string ToString()

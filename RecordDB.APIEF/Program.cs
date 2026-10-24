@@ -9,7 +9,11 @@ var builder = WebApplication.CreateBuilder(args);
 // Services
 // -----------------------------------------------------------------------
 
-builder.Services.AddControllers();
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles;
+    });
 
 // Entity Framework Core DbContext
 builder.Services.AddDbContext<RecordDbContext>(options =>

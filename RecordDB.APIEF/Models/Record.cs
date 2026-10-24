@@ -1,3 +1,5 @@
+using System.Text.Json.Serialization;
+
 namespace RecordDB.APIEF.Models
 {
     /// <summary>
@@ -22,7 +24,10 @@ namespace RecordDB.APIEF.Models
         public int?      FreeDbId  { get; set; }
 
         // Navigation properties
+        [JsonIgnore]
         public Artist?              Artist    { get; set; }
+
+        [JsonIgnore]
         public ICollection<Disc>    DiscsList { get; set; } = new List<Disc>();
 
         public override string ToString() =>

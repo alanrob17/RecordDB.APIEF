@@ -91,6 +91,26 @@ namespace RecordDB.APIEF.Tests.UnitTests.Controllers
         }
 
         [Fact]
+        public async Task GetByArtistId_ReturnsRecords()
+        {
+            // Arrange
+            var records = new List<RecordModel>
+            {
+                new() { RecordId = 1, ArtistId = 42, Name = "Kind of Blue", Recorded = 1959 }
+            };
+            _mockRepo.Setup(r => r.GetArtistRecordsAsync(42)).ReturnsAsync(records);
+
+            // Act
+            var result = await _controller.GetByArtistId(42);
+
+            // Assert
+            var okResult = result.Result.Should().BeOfType<OkObjectResult>().Subject;
+            var list = okResult.Value.Should().BeAssignableTo<IEnumerable<RecordModel>>().Subject.ToList();
+            list.Should().ContainSingle();
+            list[0].Name.Should().Be("Kind of Blue");
+        }
+
+        [Fact]
         public async Task GetByArtistName_ReturnsRecords()
         {
             // Arrange

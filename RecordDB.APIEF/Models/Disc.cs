@@ -1,3 +1,5 @@
+using System.Text.Json.Serialization;
+
 namespace RecordDB.APIEF.Models
 {
     /// <summary>
@@ -13,7 +15,10 @@ namespace RecordDB.APIEF.Models
         public int?    Length       { get; set; }
 
         // Navigation properties
+        [JsonIgnore]
         public Record?             Record { get; set; }
+
+        [JsonIgnore]
         public ICollection<Track>  Tracks { get; set; } = new List<Track>();
     }
 }
